@@ -7,7 +7,6 @@ from .forms import UserAdminCreationForm
 from .models import User
 
 
-
 @admin.register(User)
 class UserAdmin(auth_admin.UserAdmin):
     form = UserAdminChangeForm
