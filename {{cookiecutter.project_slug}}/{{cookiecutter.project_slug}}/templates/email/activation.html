@@ -1,0 +1,33 @@
+{% load i18n %}
+
+{% block subject %}
+  {% blocktrans %}Activation du compte KIS/HKM{% endblocktrans %}
+{% endblock subject %}
+{% block text_body %}
+  {% blocktrans %}Vous recevez cet e-mail car vous devez terminer le processus d'activation.{% endblocktrans %}
+  {% blocktrans %}
+    Vos informations de connexion
+  {% endblocktrans %}
+  Nom d'utilisateur :{{ user.username }}
+  Email :{{ user.email }}
+  Veuillez utiliser ce mot de passe pour vous authentifier:
+  Mot de passe: {{ password }}
+  Veuillez ne pas partager votre mot de passe avec quiconque.
+  {% blocktrans %}L'équipe de KIS | HKM {% endblocktrans %}
+{% endblock text_body %}
+{% block html_body %}
+  <h2>{% blocktrans %}Vous recevez cet e-mail car vous devez terminer le processus d'activation.{% endblocktrans %}</h2>
+  <h3>Vos informations de connexion</h3>
+  <p>
+    <strong>Nom d'utilisateur :</strong>{{ user.username }}
+  </p>
+  <p>
+    <strong>Email :</strong>{{ username.email }}
+  </p>
+  <h3>{% trans "Veuillez utiliser ce mot de passe pour vous authentifier :" %}</h3>
+  <p>
+    <strong>Mot de passe :</strong> {{ password }}
+  </p>
+  <p>{% blocktrans %}L'équipe de KIS | HKM{% endblocktrans %}</p>
+  <p>{% trans "Veuillez ne pas partager votre mot de passe avec quiconque." %}</p>
+{% endblock html_body %}
