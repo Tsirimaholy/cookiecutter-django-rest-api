@@ -346,6 +346,16 @@ SIMPLE_JWT = {
     # TODO: add option for token lifetime
     "ACCESS_TOKEN_LIFETIME": timedelta(days=1),
 }
+
+DJOSER = {
+    "SERIALIZERS": {
+        "user_create": "{{ cookiecutter.project_slug }}.users.serializers.UserCreateSerializer",
+        "current_user": "{{ cookiecutter.project_slug }}.users.serializers.UserSerializer",
+        "user": "{{ cookiecutter.project_slug }}.users.serializers.UserSerializer",
+    },
+    "HIDE_USERS": False,
+}
+
 # django-cors-headers - https://github.com/adamchainz/django-cors-headers#setup
 CORS_URLS_REGEX = r"^/api/.*$"
 
