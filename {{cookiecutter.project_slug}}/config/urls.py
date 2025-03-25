@@ -31,11 +31,9 @@ if settings.DEBUG:
 urlpatterns += [
     # User management
     path("users/", include("{{ cookiecutter.project_slug }}.users.urls", namespace="users")),
+    path("auth/", include("{{ cookiecutter.project_slug }}.users.jwt_urls")),
     # API base url
     path("api/", include("config.api_router")),
-    # DRF auth token
-    path("api/auth-token/", obtain_auth_token),
-    path("api/schema/", SpectacularAPIView.as_view(), name="api-schema"),
     path('auth', include('djoser.urls')),
     # TODO: add option if you wanna use Token based auth instead of jwt
     path('auth', include('djoser.urls.jwt')),
