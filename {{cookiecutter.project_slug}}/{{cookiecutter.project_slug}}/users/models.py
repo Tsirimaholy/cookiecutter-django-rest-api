@@ -1,9 +1,13 @@
+import uuid
+
 {%- if cookiecutter.username_type == "email" %}
 from typing import ClassVar
 
 {% endif -%}
 from django.contrib.auth.models import AbstractUser
-from django.db.models import CharField
+from django.db import models
+from django.db.models import CharField, UniqueConstraint
+
 {%- if cookiecutter.username_type == "email" %}
 from django.db.models import EmailField
 {%- endif %}
@@ -48,3 +52,33 @@ class User(AbstractUser):
         {%- else %}
         return reverse("users:detail", kwargs={"username": self.username})
         {%- endif %}
+
+class Role(models.Model):
+    id = models.UUIDField(
+        primary_key=True,
+        default=uuid.uuid4,
+        editable=False,
+        null=False,
+    )
+    ADMIN = "ADMIN"
+    INSTRUCTOR = "INSTRUCTOR"
+    CUSTOMER = "CUSTOMER"
+    STUDENT = "STUDENT"
+
+    ROLE_CHOICES = [
+        (ADMIN, "Admin"),
+        (INSTRUCTOR, "Instructor"),
+        (CUSTOMER, "Customer"),
+        (STUDENT, "Student"),
+    ]
+
+    name = models.CharField(choices=ROLE_CHOICES, max_length=20)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+
+    class Meta:
+        constraints = [
+            UniqueConstraint(fields=("user", "name"), name="unique_together_role_user"),
+        ]
+
+    def __str__(self):
+        return self.name
