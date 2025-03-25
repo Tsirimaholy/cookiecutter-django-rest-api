@@ -18,7 +18,6 @@ from django.utils.translation import gettext_lazy as _
 from .managers import UserManager
 {%- endif %}
 
-
 class User(AbstractUser):
     """
     Default custom user model for {{cookiecutter.project_name}}.
@@ -39,6 +38,9 @@ class User(AbstractUser):
 
     objects: ClassVar[UserManager] = UserManager()
     {%- endif %}
+
+    def has_role(self, role_name):
+        return Role.objects.filter(user=self, name=role_name).exists()
 
     def get_absolute_url(self) -> str:
         """Get URL for user's detail view.
