@@ -3,7 +3,7 @@
 from django.conf import settings
 from django.db import migrations, models
 import django.db.models.deletion
-import {{cookiecutter.projectslug}}.users.managers
+import {{cookiecutter.project_slug}}.users.managers
 import uuid
 
 
@@ -17,7 +17,7 @@ class Migration(migrations.Migration):
         migrations.AlterModelManagers(
             name='user',
             managers=[
-                ('objects', {{cookiecutter.projectslug}}.users.managers.UserManager()),
+                ('objects', {{cookiecutter.project_slug}}.users.managers.UserManager()),
             ],
         ),
         migrations.CreateModel(
