@@ -67,9 +67,6 @@ class Role(models.Model):
 
     ROLE_CHOICES = [
         (ADMIN, "Admin"),
-        (INSTRUCTOR, "Instructor"),
-        (CUSTOMER, "Customer"),
-        (STUDENT, "Student"),
     ]
 
     name = models.CharField(choices=ROLE_CHOICES, max_length=20)
