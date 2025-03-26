@@ -3,6 +3,7 @@ from templated_mail.mail import BaseEmailMessage
 
 from .utils import encode_uid
 
+
 class ActivationEmail(BaseEmailMessage):
     template_name = "email/activation.html"
 
