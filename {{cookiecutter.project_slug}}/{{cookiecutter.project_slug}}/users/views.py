@@ -1,11 +1,7 @@
 from djoser.views import UserViewSet as DjoserUserViewSet
 from rest_framework import status
 from rest_framework.decorators import action
-from rest_framework.mixins import ListModelMixin
-from rest_framework.mixins import RetrieveModelMixin
-from rest_framework.mixins import UpdateModelMixin
 from rest_framework.response import Response
-from rest_framework.viewsets import GenericViewSet
 
 from .models import User, Role
 from .serializers import UserCreateSerializer, ActivationSerializer
@@ -28,14 +24,7 @@ class UserAccountViewSet(DjoserUserViewSet):
         return super().get_permissions()
 
     def get_queryset(self):
-        user: User = self.request.user
-        queryset = super().get_queryset()
-        if self.action == "list" and not (
-            user.is_staff or Role.ADMIN in user.role_set.all() or user.is_superuser
-        ):
-            assert isinstance(self.request.user.id, int)
-            queryset = queryset.filter(pk=user.pk)
-        return queryset
+        return super().get_queryset().prefetch_related("role_set")
 
     def get_serializer_class(self):
         if hasattr(self, "action") and self.action == "signup":
