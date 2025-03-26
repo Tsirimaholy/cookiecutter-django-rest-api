@@ -10,7 +10,6 @@ from django.views import defaults as default_views
 {%- if cookiecutter.use_drf == 'y' %}
 from drf_spectacular.views import SpectacularAPIView
 from drf_spectacular.views import SpectacularSwaggerView
-from rest_framework.authtoken.views import obtain_auth_token
 {%- endif %}
 
 urlpatterns = [
@@ -31,12 +30,10 @@ if settings.DEBUG:
 urlpatterns += [
     # User management
     path("users/", include("{{ cookiecutter.project_slug }}.users.urls", namespace="users")),
-    path("auth/", include("{{ cookiecutter.project_slug }}.users.jwt_urls")),
+    # authentication
+    path("auth/", include("{{ cookiecutter.project_slug }}.users..jwt_urls")),
     # API base url
     path("api/", include("config.api_router")),
-    path('auth', include('djoser.urls')),
-    # TODO: add option if you wanna use Token based auth instead of jwt
-    path('auth', include('djoser.urls.jwt')),
     path(
         "api/docs/",
         SpectacularSwaggerView.as_view(url_name="api-schema"),
