@@ -14,12 +14,14 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
+        {%- if cookiecutter.username_type == "email" %}
         migrations.AlterModelManagers(
             name='user',
             managers=[
                 ('objects', {{cookiecutter.project_slug}}.users.managers.UserManager()),
             ],
         ),
+        {%- endif %}
         migrations.CreateModel(
             name='Role',
             fields=[
