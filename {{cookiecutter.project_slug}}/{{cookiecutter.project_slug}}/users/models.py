@@ -1,9 +1,4 @@
 import uuid
-
-{%- if cookiecutter.username_type == "email" %}
-from typing import ClassVar
-
-{% endif -%}
 from django.contrib.auth.models import AbstractUser
 from django.db import models
 from django.db.models import CharField, UniqueConstraint
@@ -13,6 +8,9 @@ from django.db.models import EmailField
 {%- endif %}
 from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
+{%- if cookiecutter.username_type == "email" %}
+from typing import ClassVar
+{% endif -%}
 {%- if cookiecutter.username_type == "email" %}
 
 from .managers import UserManager
