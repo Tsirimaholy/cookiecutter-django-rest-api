@@ -1,4 +1,4 @@
-{% load i18n %}
+{% raw %}{% load i18n %}
 
 {% block subject %}
   {% blocktrans %}{{ site_name }} - Your username has been successfully changed!{% endblocktrans %}
@@ -13,3 +13,4 @@
   <p>{% trans "Thanks for using our site!" %}</p>
   <p>{% blocktrans %}The {{ site_name }} team{% endblocktrans %}</p>
 {% endblock html_body %}
+{% endraw %}
