@@ -1,6 +1,7 @@
+from .models import Role, User
+
 from rest_framework.permissions import IsAdminUser
 
-from .models import Role, User
 
 
 class IsAdmin(IsAdminUser):

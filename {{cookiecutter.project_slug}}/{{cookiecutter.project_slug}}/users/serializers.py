@@ -86,7 +86,6 @@ class RoleSerializer(serializers.ModelSerializer):
 class UidAndTokenSerializer(serializers.Serializer):
     uid = serializers.CharField()
     token = serializers.CharField()
-    #
     default_error_messages = {
         "invalid_token": "INVALID_TOKEN_ERROR",
         "invalid_uid": "INVALID UID",

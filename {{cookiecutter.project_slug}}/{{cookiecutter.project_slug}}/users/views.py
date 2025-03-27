@@ -1,15 +1,14 @@
+from .utils import get_user_email
 from djoser.views import UserViewSet as DjoserUserViewSet
 from rest_framework import status
 from rest_framework.decorators import action
 from rest_framework.response import Response
 
 from .email import ConfirmationEmail, ActivationEmail
-from .email import ConfirmationEmail, ActivationEmail
 from .models import User
 from .permissions import IsAdmin
 from .serializers import ActivationSerializer
 from .serializers import UserCreateSerializer
-from .utils import get_user_email
 
 
 class UserAccountViewSet(DjoserUserViewSet):
