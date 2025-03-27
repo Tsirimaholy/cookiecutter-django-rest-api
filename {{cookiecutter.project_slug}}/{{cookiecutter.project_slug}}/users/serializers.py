@@ -6,8 +6,9 @@ from djoser.serializers import UserCreateSerializer as BaseUserCreateSerializer
 from rest_framework import serializers
 from rest_framework.settings import api_settings
 
-from {{ cookiecutter.project_slug }}.users.models import User, Role
 from {{ cookiecutter.project_slug }}.users import utils
+from {{ cookiecutter.project_slug }}.users.models import Role
+from {{ cookiecutter.project_slug }}.users.models import User
 
 
 class UserSerializer(serializers.ModelSerializer[User]):

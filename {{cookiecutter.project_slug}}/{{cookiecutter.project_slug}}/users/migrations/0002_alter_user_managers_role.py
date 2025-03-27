@@ -3,7 +3,10 @@
 from django.conf import settings
 from django.db import migrations, models
 import django.db.models.deletion
+{%- if cookiecutter.username_type == "email" %}
 import {{cookiecutter.project_slug}}.users.managers
+{%- endif %}
+import kis_api.users.managers
 import uuid
 
 
