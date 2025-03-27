@@ -3,10 +3,12 @@ from rest_framework import status
 from rest_framework.decorators import action
 from rest_framework.response import Response
 
-from .models import User, Role
-from .serializers import UserCreateSerializer, ActivationSerializer
-from .permissions import IsAdmin
 from .email import ConfirmationEmail, ActivationEmail
+from .email import ConfirmationEmail, ActivationEmail
+from .models import User
+from .permissions import IsAdmin
+from .serializers import ActivationSerializer
+from .serializers import UserCreateSerializer
 from .utils import get_user_email
 
 
@@ -42,10 +44,6 @@ class UserAccountViewSet(DjoserUserViewSet):
     def create(self, request, *args, **kwargs):
         request_data = request.data
         serializer = self.get_serializer(data=request_data)
-        # we need to validate password, so we need to write password
-        # as early as possible into the serializer
-        if "password" not in request_data or not request_data["password"]:
-            serializer.initial_data["password"] = User.objects.make_random_password(8)
         serializer.is_valid(raise_exception=True)
         self.perform_create(serializer)
         headers = self.get_success_headers(serializer.data)
