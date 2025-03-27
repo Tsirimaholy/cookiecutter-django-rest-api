@@ -6,7 +6,6 @@ import django.db.models.deletion
 {%- if cookiecutter.username_type == "email" %}
 import {{cookiecutter.project_slug}}.users.managers
 {%- endif %}
-import kis_api.users.managers
 import uuid
 
 
