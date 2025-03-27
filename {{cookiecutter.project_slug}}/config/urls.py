@@ -28,9 +28,9 @@ if settings.DEBUG:
 # API URLS
 urlpatterns += [
     # User management
-    path("users/", include("{{ cookiecutter.project_slug }}.users.urls")),
+    path("users/", include("{{ cookiecutter.project_slug }}.users.urls.urls")),
     # authentication
-    path("auth/", include("{{ cookiecutter.project_slug }}.users..jwt_urls")),
+    path("auth/", include("{{ cookiecutter.project_slug }}.users.urls.jwt_urls")),
     # API base url
     path("api/", include("config.api_router")),
     path(
