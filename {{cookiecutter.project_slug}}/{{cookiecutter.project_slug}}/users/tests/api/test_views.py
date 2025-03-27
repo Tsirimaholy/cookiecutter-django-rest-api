@@ -1,7 +1,7 @@
 import pytest
 from rest_framework.test import APIRequestFactory
 
-from {{ cookiecutter.project_slug }}.users.api.views import UserViewSet
+from {{ cookiecutter.project_slug }}.users.api.views import UserAccountViewSet as UserViewSet
 from {{ cookiecutter.project_slug }}.users.models import User
 
 
@@ -26,7 +26,7 @@ class TestUserViewSet:
 
         view.request = request
 
-        response = view.me(request)  # type: ignore[call-arg, arg-type, misc]
+        response = view.me(request)
 
         assert response.data == {
             {%- if cookiecutter.username_type == "email" %}
