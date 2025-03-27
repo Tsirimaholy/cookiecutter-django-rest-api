@@ -55,7 +55,7 @@ class UserAccountViewSet(DjoserUserViewSet):
 
     def perform_create(self, serializer, *args, **kwargs):
         user = serializer.save(*args, **kwargs)
-        context = {"user": user, "password": serializer.validated_data.get("password")}
+        context = {"user": user}
         to = [get_user_email(user)]
         ActivationEmail(self.request, context).send(to)
 
