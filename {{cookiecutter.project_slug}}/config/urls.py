@@ -8,7 +8,6 @@ from django.urls import include
 from django.urls import path
 from django.views import defaults as default_views
 {%- if cookiecutter.use_drf == 'y' %}
-from drf_spectacular.views import SpectacularAPIView
 from drf_spectacular.views import SpectacularSwaggerView
 {%- endif %}
 

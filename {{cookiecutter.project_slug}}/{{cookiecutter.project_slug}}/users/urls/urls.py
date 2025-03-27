@@ -3,6 +3,7 @@ from rest_framework.routers import DefaultRouter
 from rest_framework.routers import SimpleRouter
 
 from {{cookiecutter.project_slug}}.users.views import UserAccountViewSet
+
 app_name = "users"
 
 router = DefaultRouter() if settings.DEBUG else SimpleRouter()
