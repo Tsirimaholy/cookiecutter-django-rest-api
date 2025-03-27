@@ -40,19 +40,6 @@ class User(AbstractUser):
     def has_role(self, role_name):
         return Role.objects.filter(user=self, name=role_name).exists()
 
-    def get_absolute_url(self) -> str:
-        """Get URL for user's detail view.
-
-        Returns:
-            str: URL for user detail.
-
-        """
-        {%- if cookiecutter.username_type == "email" %}
-        return reverse("users:detail", kwargs={"pk": self.id})
-        {%- else %}
-        return reverse("users:detail", kwargs={"username": self.username})
-        {%- endif %}
-
 class Role(models.Model):
     id = models.UUIDField(
         primary_key=True,
