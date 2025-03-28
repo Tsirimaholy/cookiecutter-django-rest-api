@@ -357,6 +357,10 @@ DJOSER = {
         "user": "{{ cookiecutter.project_slug }}.users.serializers.UserSerializer",
     },
     "HIDE_USERS": False,
+    "PERMISSIONS": {
+        # Only admin users can list users
+        "user_list": ["{{cookiecutter.project_slug}}.users.permissions.IsAdmin"],
+    },
 }
 
 # django-cors-headers - https://github.com/adamchainz/django-cors-headers#setup
