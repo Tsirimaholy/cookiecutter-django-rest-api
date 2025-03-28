@@ -1,11 +1,10 @@
 from http import HTTPStatus
 
 import pytest
-from django.test.client import Client
 from django.urls import reverse
 
 
-def test_api_docs_accessible_by_admin(client: Client, admin_user):
+def test_api_docs_accessible_by_admin(client , admin_user):
     # Create a token for admin user
     jwt_create_url = reverse("jwt-create")
     response = client.post(
@@ -27,7 +26,7 @@ def test_api_docs_not_accessible_by_anonymous_users(client):
     assert response.status_code == HTTPStatus.UNAUTHORIZED
 
 
-def test_api_schema_generated_successfully(client: Client, admin_user):
+def test_api_schema_generated_successfully(client, admin_user):
     # Create a token for admin user
     jwt_create_url = reverse("jwt-create")
     response = client.post(
