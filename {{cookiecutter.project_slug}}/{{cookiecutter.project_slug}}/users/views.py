@@ -6,7 +6,6 @@ from rest_framework.response import Response
 from .email import ActivationEmail
 from .email import ConfirmationEmail
 from .models import User
-from .permissions import IsAdmin
 from .serializers import ActivationSerializer
 from .serializers import UserCreateSerializer
 from .utils import get_user_email
@@ -21,8 +20,6 @@ class UserAccountViewSet(DjoserUserViewSet):
     {%- endif %}
 
     def get_permissions(self):
-        if self.action == "signup":
-            return [IsAdmin()]
         return super().get_permissions()
 
     def get_queryset(self):
