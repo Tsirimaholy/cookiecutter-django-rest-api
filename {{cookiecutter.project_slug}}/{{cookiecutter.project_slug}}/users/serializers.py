@@ -30,7 +30,9 @@ class UserSerializer(serializers.ModelSerializer[User]):
         return [role.name for role in obj.role_set.all()]
 # TODO: check if there is any necessary email/username check required
 class UserCreateSerializer(BaseUserCreateSerializer):
-    roles:serializers.ListSerializer[serializers.CharField] = serializers.ListSerializer(child=serializers.CharField(), write_only=True)
+    roles:serializers.ListSerializer[serializers.CharField] = (
+        serializers.ListSerializer(child=serializers.CharField(), write_only=True)
+    )
     email = serializers.EmailField(required=True)
 
     class Meta(BaseUserCreateSerializer.Meta):
