@@ -3,6 +3,7 @@ from typing import TYPE_CHECKING
 from django.contrib.auth.hashers import make_password
 from django.contrib.auth.models import UserManager as DjangoUserManager
 
+from .models import Role
 if TYPE_CHECKING:
     from .models import User  # noqa: F401
 
@@ -39,8 +40,6 @@ class UserManager(DjangoUserManager["User"]):
             msg = "Superuser must have is_superuser=True."
             raise ValueError(msg)
         created_admin_user = self._create_user(email, password, **extra_fields)
-        from .models import Role
 
         Role.objects.create(name=Role.ADMIN, user=created_admin_user)
         return created_admin_user
-
