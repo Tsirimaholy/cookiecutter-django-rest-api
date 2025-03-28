@@ -26,7 +26,7 @@ class UserSerializer(serializers.ModelSerializer[User]):
         }
         {%- endif %}
 
-    def get_roles(self, obj):
+    def get_roles(self, obj)->list[str]:
         return [role.name for role in obj.role_set.all()]
 # TODO: check if there is any necessary email/username check required
 class UserCreateSerializer(BaseUserCreateSerializer):
