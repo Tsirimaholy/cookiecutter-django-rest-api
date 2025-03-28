@@ -1,8 +1,8 @@
 import pytest
 from rest_framework.test import APIRequestFactory
 
-from {{ cookiecutter.project_slug }}.users.views import UserAccountViewSet as UserViewSet
 from {{ cookiecutter.project_slug }}.users.models import User
+from {{ cookiecutter.project_slug }}.users.views import UserAccountViewSet as UserViewSet
 
 
 class TestUserViewSet:
