@@ -12,9 +12,10 @@ from {{ cookiecutter.project_slug }}.users.models import User
 
 
 class UserSerializer(serializers.ModelSerializer[User]):
+    roles = serializers.SerializerMethodField(method_name="get_roles")
     class Meta:
         model = User
-        fields = ["id", "username", "email", "roles", "user_profile_id"]
+        fields = ["id", "username", "email", "roles"]
         {%- if cookiecutter.username_type == "email" %}
         extra_kwargs = {
             "url": {"lookup_field": "pk"},
