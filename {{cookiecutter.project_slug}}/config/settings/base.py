@@ -7,10 +7,9 @@ from datetime import timedelta
 {% if cookiecutter.use_celery == 'y' -%}
 import ssl
 {%- endif %}
-import environ
-
 from pathlib import Path
 
+import environ
 
 BASE_DIR = Path(__file__).resolve(strict=True).parent.parent.parent
 # {{ cookiecutter.project_slug }}/
