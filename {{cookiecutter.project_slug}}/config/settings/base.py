@@ -1,7 +1,6 @@
-# ruff: noqa: ERA001, E501
+# ruff: noqa: ERA001, E501, I001
 """Base settings to build other settings files upon."""
 
-# Standard library imports
 {% if cookiecutter.use_celery == 'y' -%}
 import ssl
 {%- endif %}
