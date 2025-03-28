@@ -51,10 +51,6 @@ DJANGO_AZURE_ACCOUNT_KEY=
 DJANGO_AZURE_ACCOUNT_NAME=
 DJANGO_AZURE_CONTAINER_NAME=
 {% endif %}
-# django-allauth
-# ------------------------------------------------------------------------------
-DJANGO_ACCOUNT_ALLOW_REGISTRATION=True
-
 # Gunicorn
 # ------------------------------------------------------------------------------
 WEB_CONCURRENCY=4

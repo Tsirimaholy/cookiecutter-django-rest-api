@@ -38,5 +38,8 @@ class UserManager(DjangoUserManager["User"]):
         if extra_fields.get("is_superuser") is not True:
             msg = "Superuser must have is_superuser=True."
             raise ValueError(msg)
+        created_admin_user = self._create_user(email, password, **extra_fields)
 
-        return self._create_user(email, password, **extra_fields)
+        from .models import Role
+        Role.objects.create(name=Role.ADMIN, user=created_admin_user)
+        return created_admin_user

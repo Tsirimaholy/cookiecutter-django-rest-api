@@ -1,55 +1,76 @@
-from django.contrib.auth.mixins import LoginRequiredMixin
-from django.contrib.messages.views import SuccessMessageMixin
-from django.db.models import QuerySet
-from django.urls import reverse
-from django.utils.translation import gettext_lazy as _
-from django.views.generic import DetailView
-from django.views.generic import RedirectView
-from django.views.generic import UpdateView
+from djoser.views import UserViewSet as DjoserUserViewSet
+from rest_framework import status
+from rest_framework.decorators import action
+from rest_framework.response import Response
 
-from {{ cookiecutter.project_slug }}.users.models import User
+from .email import ActivationEmail
+from .email import ConfirmationEmail
+from .models import User
+from .serializers import ActivationSerializer
+from .serializers import UserCreateSerializer
+from .utils import get_user_email
 
 
-class UserDetailView(LoginRequiredMixin, DetailView):
-    model = User
+class UserAccountViewSet(DjoserUserViewSet):
+    queryset = User.objects.all()
     {%- if cookiecutter.username_type == "email" %}
-    slug_field = "id"
-    slug_url_kwarg = "id"
+    lookup_field = "pk"
     {%- else %}
-    slug_field = "username"
-    slug_url_kwarg = "username"
+    lookup_field = "username"
     {%- endif %}
 
+    def get_permissions(self):
+        return super().get_permissions()
 
-user_detail_view = UserDetailView.as_view()
+    def get_queryset(self):
+        return super().get_queryset().prefetch_related("role_set")
 
+    def get_serializer_class(self):
+        if hasattr(self, "action") and self.action == "signup":
+            return UserCreateSerializer
+        if self.action == "activation":
+            return ActivationSerializer
+        return super().get_serializer_class()
 
-class UserUpdateView(LoginRequiredMixin, SuccessMessageMixin, UpdateView):
-    model = User
-    fields = ["name"]
-    success_message = _("Information successfully updated")
-
-    def get_success_url(self) -> str:
-        assert self.request.user.is_authenticated  # type guard
-        return self.request.user.get_absolute_url()
-
-    def get_object(self, queryset: QuerySet | None=None) -> User:
-        assert self.request.user.is_authenticated  # type guard
-        return self.request.user
-
-
-user_update_view = UserUpdateView.as_view()
+    def get_serializer_context(self):
+        context = super().get_serializer_context()
+        context["request"] = self.request
+        return context
 
 
-class UserRedirectView(LoginRequiredMixin, RedirectView):
-    permanent = False
+    def create(self, request, *args, **kwargs):
+        request_data = request.data
+        serializer = self.get_serializer(data=request_data)
+        serializer.is_valid(raise_exception=True)
+        self.perform_create(serializer)
+        headers = self.get_success_headers(serializer.data)
+        return Response(
+            serializer.data,
+            status=status.HTTP_201_CREATED,
+            headers=headers,
+        )
 
-    def get_redirect_url(self) -> str:
-        {%- if cookiecutter.username_type == "email" %}
-        return reverse("users:detail", kwargs={"pk": self.request.user.pk})
-        {%- else %}
-        return reverse("users:detail", kwargs={"username": self.request.user.username})
-        {%- endif %}
+    def perform_create(self, serializer, *args, **kwargs):
+        user = serializer.save(*args, **kwargs)
+        context = {"user": user}
+        to = [get_user_email(user)]
+        ActivationEmail(self.request, context).send(to)
 
+    @action(["post"], detail=False)
+    def signup(self, request, *args, **kwargs):
+        return self.create(request, *args, **kwargs)
 
-user_redirect_view = UserRedirectView.as_view()
+    @action(["post"], detail=False)
+    def activation(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        user = serializer.user
+        user.is_active = True
+        user.save()
+
+        self.instance = user
+        context = {"user": user}
+        to = [get_user_email(user)]
+        ConfirmationEmail(self.request, context).send(to)
+
+        return Response(status=status.HTTP_204_NO_CONTENT)

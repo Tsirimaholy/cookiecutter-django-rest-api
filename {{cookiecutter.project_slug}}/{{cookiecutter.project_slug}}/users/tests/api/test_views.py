@@ -1,8 +1,8 @@
 import pytest
 from rest_framework.test import APIRequestFactory
 
-from {{ cookiecutter.project_slug }}.users.api.views import UserViewSet
 from {{ cookiecutter.project_slug }}.users.models import User
+from {{ cookiecutter.project_slug }}.users.views import UserAccountViewSet as UserViewSet
 
 
 class TestUserViewSet:
@@ -25,15 +25,17 @@ class TestUserViewSet:
         request.user = user
 
         view.request = request
+        view.action = "me"
 
-        response = view.me(request)  # type: ignore[call-arg, arg-type, misc]
-
+        {%- if cookiecutter.username_type == "email" %}
+        view.format_kwarg = {"pk": user.pk}
+        {%- else %}
+        view.format_kwarg = {"username": user.username}
+        {%- endif %}
+        response = view.me(request)
         assert response.data == {
-            {%- if cookiecutter.username_type == "email" %}
-            "url": f"http://testserver/api/users/{user.pk}/",
-            {%- else %}
-            "username": user.username,
-            "url": f"http://testserver/api/users/{user.username}/",
-            {%- endif %}
-            "name": user.name,
-        }
+                   "id": user.id,
+                   "username": user.username,
+                   "email": user.email,
+                   "roles": [role.name for role in user.role_set.all()],
+               }

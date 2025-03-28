@@ -1,8 +1,11 @@
-# ruff: noqa: ERA001, E501
+# ruff: noqa: ERA001, E501, I001
 """Base settings to build other settings files upon."""
 
 {% if cookiecutter.use_celery == 'y' -%}
 import ssl
+{%- endif %}
+{% if cookiecutter.use_drf == 'y' -%}
+from datetime import timedelta
 {%- endif %}
 from pathlib import Path
 
@@ -85,16 +88,12 @@ DJANGO_APPS = [
 THIRD_PARTY_APPS = [
     "crispy_forms",
     "crispy_bootstrap5",
-    "allauth",
-    "allauth.account",
-    "allauth.mfa",
-    "allauth.socialaccount",
 {%- if cookiecutter.use_celery == 'y' %}
     "django_celery_beat",
 {%- endif %}
 {%- if cookiecutter.use_drf == "y" %}
     "rest_framework",
-    "rest_framework.authtoken",
+    "djoser",
     "corsheaders",
     "drf_spectacular",
 {%- endif %}
@@ -120,7 +119,6 @@ MIGRATION_MODULES = {"sites": "{{ cookiecutter.project_slug }}.contrib.sites.mig
 # https://docs.djangoproject.com/en/dev/ref/settings/#authentication-backends
 AUTHENTICATION_BACKENDS = [
     "django.contrib.auth.backends.ModelBackend",
-    "allauth.account.auth_backends.AuthenticationBackend",
 ]
 # https://docs.djangoproject.com/en/dev/ref/settings/#auth-user-model
 AUTH_USER_MODEL = "users.User"
@@ -167,7 +165,6 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
-    "allauth.account.middleware.AccountMiddleware",
 ]
 
 # STATIC
@@ -213,7 +210,6 @@ TEMPLATES = [
                 "django.template.context_processors.static",
                 "django.template.context_processors.tz",
                 "django.contrib.messages.context_processors.messages",
-                "{{cookiecutter.project_slug}}.users.context_processors.allauth_settings",
             ],
         },
     },
@@ -259,8 +255,6 @@ ADMINS = [("""{{cookiecutter.author_name}}""", "{{cookiecutter.email}}")]
 # https://docs.djangoproject.com/en/dev/ref/settings/#managers
 MANAGERS = ADMINS
 # https://cookiecutter-django.readthedocs.io/en/latest/settings.html#other-environment-settings
-# Force the `admin` sign in process to go through the `django-allauth` workflow
-DJANGO_ADMIN_FORCE_ALLAUTH = env.bool("DJANGO_ADMIN_FORCE_ALLAUTH", default=False)
 
 # LOGGING
 # ------------------------------------------------------------------------------
@@ -331,29 +325,7 @@ CELERY_TASK_SEND_SENT_EVENT = True
 CELERY_WORKER_HIJACK_ROOT_LOGGER = False
 
 {%- endif %}
-# django-allauth
-# ------------------------------------------------------------------------------
-ACCOUNT_ALLOW_REGISTRATION = env.bool("DJANGO_ACCOUNT_ALLOW_REGISTRATION", True)
-# https://docs.allauth.org/en/latest/account/configuration.html
-ACCOUNT_LOGIN_METHODS = {"{{cookiecutter.username_type}}"}
-# https://docs.allauth.org/en/latest/account/configuration.html
-{%- if cookiecutter.username_type == "username" %}
-ACCOUNT_SIGNUP_FIELDS = ["email*", "username*", "password1*", "password2*"]
-{%- else %}
-ACCOUNT_SIGNUP_FIELDS = ["email*", "password1*", "password2*"]
-# https://docs.allauth.org/en/latest/account/configuration.html
-ACCOUNT_USER_MODEL_USERNAME_FIELD = None
-{%- endif %}
-# https://docs.allauth.org/en/latest/account/configuration.html
-ACCOUNT_EMAIL_VERIFICATION = "mandatory"
-# https://docs.allauth.org/en/latest/account/configuration.html
-ACCOUNT_ADAPTER = "{{cookiecutter.project_slug}}.users.adapters.AccountAdapter"
-# https://docs.allauth.org/en/latest/account/forms.html
-ACCOUNT_FORMS = {"signup": "{{cookiecutter.project_slug}}.users.forms.UserSignupForm"}
-# https://docs.allauth.org/en/latest/socialaccount/configuration.html
-SOCIALACCOUNT_ADAPTER = "{{cookiecutter.project_slug}}.users.adapters.SocialAccountAdapter"
-# https://docs.allauth.org/en/latest/socialaccount/configuration.html
-SOCIALACCOUNT_FORMS = {"signup": "{{cookiecutter.project_slug}}.users.forms.UserSocialSignupForm"}
+
 {% if cookiecutter.frontend_pipeline == 'Django Compressor' -%}
 # django-compressor
 # ------------------------------------------------------------------------------
@@ -367,11 +339,28 @@ STATICFILES_FINDERS += ["compressor.finders.CompressorFinder"]
 # django-rest-framework - https://www.django-rest-framework.org/api-guide/settings/
 REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": (
-        "rest_framework.authentication.SessionAuthentication",
-        "rest_framework.authentication.TokenAuthentication",
+        "rest_framework_simplejwt.authentication.JWTAuthentication",
     ),
     "DEFAULT_PERMISSION_CLASSES": ("rest_framework.permissions.IsAuthenticated",),
     "DEFAULT_SCHEMA_CLASS": "drf_spectacular.openapi.AutoSchema",
+}
+SIMPLE_JWT = {
+    "AUTH_HEADER_TYPES": ("Bearer",),
+    # TODO: add option for token lifetime
+    "ACCESS_TOKEN_LIFETIME": timedelta(days=1),
+}
+
+DJOSER = {
+    "SERIALIZERS": {
+        "user_create": "{{ cookiecutter.project_slug }}.users.serializers.UserCreateSerializer",
+        "current_user": "{{ cookiecutter.project_slug }}.users.serializers.UserSerializer",
+        "user": "{{ cookiecutter.project_slug }}.users.serializers.UserSerializer",
+    },
+    "HIDE_USERS": False,
+    "PERMISSIONS": {
+        # Only admin users can list users
+        "user_list": ["{{cookiecutter.project_slug}}.users.permissions.IsAdmin"],
+    },
 }
 
 # django-cors-headers - https://github.com/adamchainz/django-cors-headers#setup

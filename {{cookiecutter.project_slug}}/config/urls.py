@@ -7,25 +7,14 @@ from django.contrib.staticfiles.urls import staticfiles_urlpatterns
 from django.urls import include
 from django.urls import path
 from django.views import defaults as default_views
-from django.views.generic import TemplateView
 {%- if cookiecutter.use_drf == 'y' %}
 from drf_spectacular.views import SpectacularAPIView
 from drf_spectacular.views import SpectacularSwaggerView
-from rest_framework.authtoken.views import obtain_auth_token
 {%- endif %}
 
 urlpatterns = [
-    path("", TemplateView.as_view(template_name="pages/home.html"), name="home"),
-    path(
-        "about/",
-        TemplateView.as_view(template_name="pages/about.html"),
-        name="about",
-    ),
     # Django Admin, use {% raw %}{% url 'admin:index' %}{% endraw %}
     path(settings.ADMIN_URL, admin.site.urls),
-    # User management
-    path("users/", include("{{ cookiecutter.project_slug }}.users.urls", namespace="users")),
-    path("accounts/", include("allauth.urls")),
     # Your stuff: custom urls includes go here
     # ...
     # Media files
@@ -39,10 +28,12 @@ if settings.DEBUG:
 {% if cookiecutter.use_drf == 'y' %}
 # API URLS
 urlpatterns += [
+    # User management
+    path("users/", include("{{ cookiecutter.project_slug }}.users.urls.urls")),
+    # authentication
+    path("auth/", include("{{ cookiecutter.project_slug }}.users.urls.jwt_urls")),
     # API base url
     path("api/", include("config.api_router")),
-    # DRF auth token
-    path("api/auth-token/", obtain_auth_token),
     path("api/schema/", SpectacularAPIView.as_view(), name="api-schema"),
     path(
         "api/docs/",

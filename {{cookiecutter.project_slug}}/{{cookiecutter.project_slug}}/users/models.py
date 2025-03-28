@@ -1,14 +1,17 @@
+import uuid
 {%- if cookiecutter.username_type == "email" %}
 from typing import ClassVar
+{%- endif %}
 
-{% endif -%}
 from django.contrib.auth.models import AbstractUser
+from django.db import models
 from django.db.models import CharField
 {%- if cookiecutter.username_type == "email" %}
 from django.db.models import EmailField
 {%- endif %}
-from django.urls import reverse
+from django.db.models import UniqueConstraint
 from django.utils.translation import gettext_lazy as _
+
 {%- if cookiecutter.username_type == "email" %}
 
 from .managers import UserManager
@@ -36,15 +39,32 @@ class User(AbstractUser):
     objects: ClassVar[UserManager] = UserManager()
     {%- endif %}
 
-    def get_absolute_url(self) -> str:
-        """Get URL for user's detail view.
+    def has_role(self, role_name):
+        return Role.objects.filter(user=self, name=role_name).exists()
 
-        Returns:
-            str: URL for user detail.
+class Role(models.Model):
+    id = models.UUIDField(
+        primary_key=True,
+        default=uuid.uuid4,
+        editable=False,
+        null=False,
+    )
+    ADMIN = "ADMIN"
+    INSTRUCTOR = "INSTRUCTOR"
+    CUSTOMER = "CUSTOMER"
+    STUDENT = "STUDENT"
 
-        """
-        {%- if cookiecutter.username_type == "email" %}
-        return reverse("users:detail", kwargs={"pk": self.id})
-        {%- else %}
-        return reverse("users:detail", kwargs={"username": self.username})
-        {%- endif %}
+    ROLE_CHOICES = [
+        (ADMIN, "Admin"),
+    ]
+
+    name = models.CharField(choices=ROLE_CHOICES, max_length=20)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+
+    class Meta:
+        constraints = [
+            UniqueConstraint(fields=("user", "name"), name="unique_together_role_user"),
+        ]
+
+    def __str__(self):
+        return self.name
