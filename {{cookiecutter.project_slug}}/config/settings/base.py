@@ -1,11 +1,11 @@
 # ruff: noqa: ERA001, E501
 """Base settings to build other settings files upon."""
 
-{% if cookiecutter.use_drf == "y" -%}
-from datetime import timedelta
-{%- endif %}
 {% if cookiecutter.use_celery == 'y' -%}
 import ssl
+{%- endif %}
+{% if cookiecutter.use_drf == "y" -%}
+from datetime import timedelta
 {%- endif %}
 from pathlib import Path
 
